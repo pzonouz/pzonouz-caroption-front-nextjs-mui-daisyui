@@ -3,8 +3,10 @@ import "./globals.css";
 import { ThemeProvider } from "@mui/material/styles";
 import theme from "./theme";
 import { vazirFont } from "./fonts";
-import { CacheProvider } from "./CacheProvider";
 import StoreProvider from "./components/Providers/StoreProvider";
+import { CacheProvider } from "./components/Providers/CacheProvider";
+import { AuthProvider } from "./components/Providers/AuthProvider";
+import { SnackbarProvider } from "./components/Providers/SnackbarProvider";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -20,7 +22,11 @@ export default function RootLayout({
       <body className={`${vazirFont.className} antialiased`}>
         <StoreProvider>
           <CacheProvider>
-            <ThemeProvider theme={theme}>{children}</ThemeProvider>
+            <ThemeProvider theme={theme}>
+              <AuthProvider>
+                <SnackbarProvider>{children}</SnackbarProvider>
+              </AuthProvider>
+            </ThemeProvider>
           </CacheProvider>
         </StoreProvider>
       </body>

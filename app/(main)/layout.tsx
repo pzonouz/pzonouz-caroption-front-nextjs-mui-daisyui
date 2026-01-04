@@ -1,16 +1,10 @@
-"use client";
 import { AppBar, Toolbar } from "@mui/material";
-import React from "react";
-import AdminMenu from "../components/Navigation/AdminMenu";
+import MainMenu from "../components/Navigation/MainMenu";
 
 const layout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div>
-      <AppBar>
-        <Toolbar>
-          <AdminMenu />
-        </Toolbar>
-      </AppBar>
+      <MainMenu />
       {children}
     </div>
   );

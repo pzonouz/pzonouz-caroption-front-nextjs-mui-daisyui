@@ -34,6 +34,9 @@ const AdminMenu = () => {
         <MenuItem onClick={handleClose}>
           <Link href="/admin/categories">دسته بندی</Link>
         </MenuItem>
+        <MenuItem onClick={handleClose}>
+          <Link href="/admin/products">کالاها</Link>
+        </MenuItem>
         <MenuItem onClick={handleClose}>Logout</MenuItem>
       </Menu>
     </div>
