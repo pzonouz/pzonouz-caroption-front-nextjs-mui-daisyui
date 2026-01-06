@@ -7,22 +7,24 @@ import { EditProduct } from "@/app/components/Products/EditProduct";
 import { ActionMenu } from "@/app/components/shared/ActionMenu";
 import { Collapsible } from "@/app/components/Surface/Collapsible";
 import { useGetProductsQuery } from "@/app/lib/api";
+import { useAppSelector } from "@/app/lib/hooks";
 import { Box, Typography } from "@mui/material";
 import { GridColDef } from "@mui/x-data-grid";
 
 const page = () => {
-  const { data: categories, isFetching } = useGetProductsQuery();
+  const { data: products, isFetching } = useGetProductsQuery();
+  const id = useAppSelector((state) => state?.modal?.id);
 
-  const columns: GridColDef<(typeof categories)[]>[] = [
+  const columns: GridColDef<(typeof products)[]>[] = [
     {
       field: "name",
-      headerName: "نام دسته بندی",
-      width: 200,
+      headerName: "نام کالا",
+      width: 300,
     },
     {
-      field: "parentName",
-      headerName: "والد",
-      width: 100,
+      field: "categoryName",
+      headerName: "دسته بندی",
+      width: 300,
     },
     {
       field: "actions",
@@ -31,7 +33,8 @@ const page = () => {
       editable: false,
       sortable: false,
       renderCell: (params) => (
-        <ActionMenu entity={`/categories`} id={params.row?.id} />
+        // @ts-ignore
+        <ActionMenu entity={`/products`} id={params.row?.id} />
       ),
     },
   ];
@@ -45,15 +48,12 @@ const page = () => {
             اضافه کردن کالا
           </Typography>
           <CreateProduct />
-          <EditProduct />
+          {/* Prevent Load Edit product widthout Id */}
+          {id && <EditProduct />}
           <Deleteproduct />
         </Box>
       </Collapsible>
-      <DataTable
-        rows={categories ?? []}
-        columns={columns}
-        loading={isFetching}
-      />
+      <DataTable rows={products ?? []} columns={columns} loading={isFetching} />
     </div>
   );
 };

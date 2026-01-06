@@ -1,7 +1,7 @@
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect } from "react";
-import { categorySchema, categoryType } from "@/app/schemas";
+import { useEffect, useState } from "react";
+import { categorySchema, categoryType, imageType } from "@/app/schemas";
 import {
   useCreateCategoryMutation,
   useEditCategoryMutation,
@@ -14,6 +14,7 @@ import {
   Box,
   Button,
   FormControlLabel,
+  IconButton,
   Switch,
   TextField,
 } from "@mui/material";
@@ -24,26 +25,38 @@ import {
   setSnackbarOpen,
   setSnackbarSeverity,
 } from "@/app/lib/features/snackbar";
+import { ImageHandlerComponent } from "../Image/ImageHandlerComponent";
+import AddToPhotosIcon from "@mui/icons-material/AddToPhotos";
+import { ImageShow } from "../Image/ImageShow";
+import { Slugify } from "@/app/utils";
 
 const CategoryForm = ({ category }: { category?: categoryType }) => {
   const {
     handleSubmit,
     reset,
     control,
+    setValue,
+    watch,
     formState: { errors },
   } = useForm<categoryType>({
     resolver: zodResolver(categorySchema),
-    defaultValues: {
-      description: "",
+    values: category ?? {
       name: "",
+      description: "",
+      slug: "",
       priority: "",
       show: false,
+      imageId: null,
     },
   });
-  useEffect(() => {
-    if (category) reset(category);
-  }, [category, reset]);
+  const imageId = watch("imageId");
+  const imageUrl = watch("imageUrl");
+  const image: imageType | null = imageId
+    ? { id: imageId, name: "", imageUrl: imageUrl ?? "" }
+    : null;
+
   const dispatch = useAppDispatch();
+  const [open, setOpen] = useState<boolean>(false);
   const [createCategory, { isLoading }] = useCreateCategoryMutation();
   const [editCategory] = useEditCategoryMutation();
   const { data: parentCategories } = useGetParentCategoriesQuery();
@@ -79,6 +92,12 @@ const CategoryForm = ({ category }: { category?: categoryType }) => {
     }
   };
 
+  useEffect(() => {
+    if (image) {
+      setValue("imageId", image.id);
+    }
+  }, [image]);
+
   return (
     <Box
       className="flex flex-col gap-2 w-full"
@@ -96,6 +115,24 @@ const CategoryForm = ({ category }: { category?: categoryType }) => {
               error={!!errors?.name}
               size="small"
               helperText={errors?.name?.message}
+              className="w-full"
+              onChange={(e) => {
+                field.onChange(e.target?.value);
+                setValue("slug", Slugify(e.target?.value));
+              }}
+            />
+          )}
+        ></Controller>
+        <Controller
+          name="slug"
+          control={control}
+          render={({ field }) => (
+            <TextField
+              {...field}
+              label="شناسه"
+              error={!!errors?.slug}
+              size="small"
+              helperText={errors?.slug?.message}
               className="w-full"
             />
           )}
@@ -130,7 +167,7 @@ const CategoryForm = ({ category }: { category?: categoryType }) => {
           render={({ field }) => (
             <Autocomplete
               size="small"
-              options={parentCategories}
+              options={parentCategories ?? []}
               getOptionLabel={(item) => item?.name ?? ""}
               value={
                 parentCategories?.find((c) => c.id === field.value) ?? null
@@ -140,6 +177,17 @@ const CategoryForm = ({ category }: { category?: categoryType }) => {
               sx={{ width: "100%" }}
             />
           )}
+        />
+        <ImageHandlerComponent<categoryType>
+          open={open}
+          setOpen={setOpen}
+          image={image}
+          setImage={(img) => {
+            setValue("imageId", img?.id ?? null);
+            setValue("imageUrl", img?.imageUrl ?? "");
+          }}
+          setValue={setValue}
+          field="imageId"
         />
         <Controller
           control={control}
@@ -152,6 +200,15 @@ const CategoryForm = ({ category }: { category?: categoryType }) => {
           )}
         />
       </Box>
+      <IconButton
+        className="w-20"
+        onClick={() => {
+          setOpen(true);
+        }}
+      >
+        <AddToPhotosIcon />
+      </IconButton>
+      {image && <ImageShow image={image} />}
       <Button
         loading={isLoading}
         component="button"

@@ -25,7 +25,7 @@ export const DataTable = ({
           },
         }}
         pageSizeOptions={[8]}
-        checkboxSelection
+        // checkboxSelection
         // disableRowSelectionOnClick
         showToolbar
       />

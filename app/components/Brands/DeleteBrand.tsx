@@ -1,6 +1,5 @@
 "use client";
-import { useDeleteCategoryMutation } from "@/app/lib/api";
-import { setModalOpen, setModalType } from "@/app/lib/features/modals";
+import { setModalOpen } from "@/app/lib/features/modals";
 import { useAppDispatch, useAppSelector } from "@/app/lib/hooks";
 import { Box, Button, Modal, Typography } from "@mui/material";
 import {
@@ -8,9 +7,10 @@ import {
   setSnackbarOpen,
   setSnackbarSeverity,
 } from "@/app/lib/features/snackbar";
+import { useDeleteBrandMutation } from "@/app/lib/api";
 
-export const DeleteCategory = () => {
-  const [deleteCategory, { isLoading }] = useDeleteCategoryMutation();
+export const DeleteBrand = () => {
+  const [deletebrand, { isLoading }] = useDeleteBrandMutation();
   const id = useAppSelector((state) => state?.modal?.id);
   const open = useAppSelector((state) => state?.modal?.open);
   const type = useAppSelector((state) => state?.modal?.type);
@@ -35,9 +35,8 @@ export const DeleteCategory = () => {
         <Typography className="text-lg font-semibold">آیا پاک شود؟</Typography>
         <Box className="flex flex-row items-center justify-between mt-10 mx-10">
           <Button
-            loading={isLoading}
             onClick={() => {
-              deleteCategory({ id: id }).then(() => {
+              deletebrand({ id: id }).then(() => {
                 dispatch(setModalOpen(false));
                 dispatch(setSnackbarOpen(true));
                 dispatch(setSnackbarSeverity("success"));
@@ -50,6 +49,7 @@ export const DeleteCategory = () => {
             بله
           </Button>
           <Button
+            loading={isLoading}
             onClick={() => {
               dispatch(setModalOpen(false));
             }}

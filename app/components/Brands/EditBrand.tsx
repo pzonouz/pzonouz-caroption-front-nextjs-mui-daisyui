@@ -1,16 +1,16 @@
 "use client";
-import { ProductForm } from "./ProductForm";
-import { useGetProductQuery } from "@/app/lib/api";
+import { BrandForm } from "./BrandForm";
+import { useGetBrandQuery } from "@/app/lib/api";
 import { setModalId, setModalOpen } from "@/app/lib/features/modals";
 import { useAppDispatch, useAppSelector } from "@/app/lib/hooks";
 import { Box, Modal } from "@mui/material";
 
-export const EditProduct = () => {
+export const EditBrand = () => {
   const id = useAppSelector((state) => state?.modal?.id);
   const open = useAppSelector((state) => state?.modal?.open);
   const type = useAppSelector((state) => state?.modal?.type);
   const dispatch = useAppDispatch();
-  const { data: product } = useGetProductQuery(id);
+  const { data: brand } = useGetBrandQuery(id);
   return (
     <Modal
       open={Boolean(open) && type == "Edit"}
@@ -29,7 +29,7 @@ export const EditProduct = () => {
         }}
         className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-5/6 "
       >
-        <ProductForm product={product} />
+        <BrandForm brand={brand} />
       </Box>
     </Modal>
   );

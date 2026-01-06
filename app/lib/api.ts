@@ -2,6 +2,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import {
   brandType,
   categoryType,
+  imageType,
   productType,
   signinType,
   signupType,
@@ -14,7 +15,7 @@ export const api = createApi({
     baseUrl: `${process.env.NEXT_PUBLIC_BACKEND_URL}`,
   }),
 
-  tagTypes: ["categories", "products", "brands"],
+  tagTypes: ["categories", "products", "brands", "images"],
   endpoints: (builder) => ({
     getCategories: builder.query<categoryType[], void>({
       query: () => `categories`,
@@ -122,6 +123,40 @@ export const api = createApi({
       }),
       invalidatesTags: ["brands"],
     }),
+    getimages: builder.query<imageType[], void>({
+      query: () => `images`,
+      providesTags: ["images"],
+    }),
+    getImage: builder.query<imageType, string>({
+      query: (id: string) => `images/${id}`,
+      providesTags: ["images"],
+    }),
+    createImage: builder.mutation<void, Partial<imageType>>({
+      query: ({ ...post }) => ({
+        url: `images`,
+        method: "POST",
+        body: post,
+      }),
+      invalidatesTags: ["images"],
+    }),
+    editImage: builder.mutation<
+      void,
+      Partial<imageType> & Pick<imageType, "id">
+    >({
+      query: ({ id, ...patch }) => ({
+        url: `images/${id}`,
+        method: "PATCH",
+        body: patch,
+      }),
+      invalidatesTags: ["images"],
+    }),
+    deleteImage: builder.mutation<void, Pick<imageType, "id">>({
+      query: (id) => ({
+        url: `images/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["images"],
+    }),
     signup: builder.mutation<void, Partial<signupType>>({
       query: ({ ...patch }) => ({
         url: `auth/signup`,
@@ -149,13 +184,18 @@ export const {
   useGetProductsQuery,
   useGetProductQuery,
   useCreateProductMutation,
-  useEditBrandMutation,
-  useDeleteBrandMutation,
+  useEditProductMutation,
+  useDeleteProductMutation,
   useGetBrandsQuery,
   useGetBrandQuery,
   useCreateBrandMutation,
-  useEditProductMutation,
-  useDeleteProductMutation,
+  useEditBrandMutation,
+  useDeleteBrandMutation,
+  useGetimagesQuery,
+  useGetImageQuery,
+  useCreateImageMutation,
+  useEditImageMutation,
+  useDeleteImageMutation,
   useSignupMutation,
   useSigninMutation,
 } = api;

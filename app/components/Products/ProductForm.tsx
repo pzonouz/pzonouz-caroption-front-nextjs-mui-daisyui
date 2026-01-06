@@ -1,7 +1,7 @@
-import { useForm, Controller } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect } from "react";
-import { productSchema, productType } from "@/app/schemas";
+import { useState } from "react";
+import { imageType, productSchema, productType } from "@/app/schemas";
 import {
   useCreateProductMutation,
   useEditProductMutation,
@@ -15,26 +15,33 @@ import {
   Box,
   Button,
   FormControlLabel,
+  IconButton,
   Switch,
   TextField,
 } from "@mui/material";
 import { useAppDispatch } from "@/app/lib/hooks";
 import { setModalOpen } from "@/app/lib/features/modals";
+import AddToPhotosIcon from "@mui/icons-material/AddToPhotos";
 import {
   setSnackbarMessage,
   setSnackbarOpen,
   setSnackbarSeverity,
 } from "@/app/lib/features/snackbar";
+import { ImageHandlerComponent } from "../Image/ImageHandlerComponent";
+import { ImageShow } from "../Image/ImageShow";
+import { Slugify } from "@/app/utils";
 
 const ProductForm = ({ product }: { product?: productType }) => {
   const {
     handleSubmit,
-    reset,
     control,
+    setValue,
+    watch,
+    reset,
     formState: { errors },
   } = useForm<productType>({
     resolver: zodResolver(productSchema),
-    defaultValues: {
+    values: product ?? {
       name: "",
       description: "",
       info: "",
@@ -42,30 +49,33 @@ const ProductForm = ({ product }: { product?: productType }) => {
       count: "",
       categoryId: "",
       brandId: "",
-      entityId: "",
       slug: "",
-      imageId: "",
-      imageIds: "",
       imageUrl: "",
       position: "",
       code: "",
       show: false,
+      slug: "",
     },
   });
-  useEffect(() => {
-    if (product) reset(product);
-  }, [product, reset]);
-  useEffect(() => {
-    console.log(errors);
-  }, [errors]);
+
+  const imageId = watch("imageId");
+  const imageUrl = watch("imageUrl");
+  const image: imageType | null = imageId
+    ? { id: imageId, name: "", imageUrl: imageUrl ?? "" }
+    : null;
+
   const dispatch = useAppDispatch();
+  const [open, setOpen] = useState(false);
+
   const [createProduct, { isLoading }] = useCreateProductMutation();
   const [editProduct] = useEditProductMutation();
+
   const { data: categories } = useGetCategoriesQuery();
   const { data: brands } = useGetBrandsQuery();
+
   const productHandler = (data: productType) => {
     if (product) {
-      editProduct({ id: product?.id, ...data })
+      editProduct({ id: product.id, ...data })
         .unwrap()
         .then(() => {
           dispatch(setSnackbarSeverity("success"));
@@ -95,6 +105,9 @@ const ProductForm = ({ product }: { product?: productType }) => {
     }
   };
 
+  const formatNumber = (value: string) =>
+    value.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
   return (
     <Box
       className="flex flex-col gap-2 w-full"
@@ -110,36 +123,73 @@ const ProductForm = ({ product }: { product?: productType }) => {
               {...field}
               label="نام"
               error={!!errors?.name}
-              size="small"
               helperText={errors?.name?.message}
-              className="w-full"
+              size="small"
+              onChange={(e) => {
+                field.onChange(e.target?.value);
+                setValue("slug", Slugify(e.target?.value));
+              }}
             />
           )}
-        ></Controller>
+        />
+
+        <Controller
+          name="slug"
+          control={control}
+          render={({ field }) => (
+            <TextField {...field} label="شناسه" size="small" />
+          )}
+        />
         <Controller
           name="description"
           control={control}
           render={({ field }) => (
-            <TextField
-              {...field}
-              label="توضیح"
-              error={!!errors?.description}
-              size="small"
-            />
+            <TextField {...field} label="توضیح" size="small" />
           )}
-        ></Controller>
+        />
+
         <Controller
           name="info"
           control={control}
           render={({ field }) => (
+            <TextField {...field} label="توضیح کوتاه" size="small" />
+          )}
+        />
+
+        <Controller
+          name="price"
+          control={control}
+          render={({ field }) => (
             <TextField
               {...field}
-              label="توضیح کوتاه"
-              error={!!errors?.info}
+              value={formatNumber(field.value ?? "")}
+              onChange={(e) => {
+                const raw = e.target.value.replace(/,/g, "");
+                field.onChange(raw);
+              }}
+              label="قیمت"
               size="small"
             />
           )}
-        ></Controller>
+        />
+
+        <Controller
+          name="count"
+          control={control}
+          render={({ field }) => (
+            <TextField
+              {...field}
+              value={formatNumber(field.value ?? "")}
+              onChange={(e) => {
+                const raw = e.target.value.replace(/,/g, "");
+                field.onChange(raw);
+              }}
+              label="تعداد"
+              size="small"
+            />
+          )}
+        />
+
         <Controller
           name="categoryId"
           control={control}
@@ -153,10 +203,23 @@ const ProductForm = ({ product }: { product?: productType }) => {
               renderInput={(params) => (
                 <TextField {...params} label="دسته بندی" />
               )}
-              sx={{ width: "100%" }}
             />
           )}
         />
+
+        {/* ⭐ Generic Image Handler */}
+        <ImageHandlerComponent<productType>
+          open={open}
+          setOpen={setOpen}
+          image={image}
+          setImage={(img) => {
+            setValue("imageId", img?.id ?? null);
+            setValue("imageUrl", img?.imageUrl ?? "");
+          }}
+          setValue={setValue}
+          field="imageId"
+        />
+
         <Controller
           name="brandId"
           control={control}
@@ -168,31 +231,43 @@ const ProductForm = ({ product }: { product?: productType }) => {
               value={brands?.find((c) => c.id === field.value) ?? null}
               onChange={(_, value) => field.onChange(value?.id ?? null)}
               renderInput={(params) => <TextField {...params} label="برند" />}
-              sx={{ width: "100%" }}
             />
           )}
         />
+
         <Controller
-          control={control}
           name="show"
+          control={control}
           render={({ field }) => (
             <FormControlLabel
-              control={<Switch {...field} checked={field.value} />}
+              control={
+                <Switch
+                  checked={!!field.value}
+                  onChange={(e) => field.onChange(e.target.checked)}
+                />
+              }
               label="نمایش"
             />
           )}
         />
       </Box>
+
+      <IconButton className="w-20" onClick={() => setOpen(true)}>
+        <AddToPhotosIcon />
+      </IconButton>
+
+      <ImageShow image={image} />
+
       <Button
         loading={isLoading}
-        component="button"
         type="submit"
         variant="contained"
-        className="w-full "
+        className="w-full"
       >
         ثبت
       </Button>
     </Box>
   );
 };
+
 export { ProductForm };

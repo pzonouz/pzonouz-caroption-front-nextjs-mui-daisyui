@@ -1,45 +1,53 @@
-import { IconButton, Menu, MenuItem } from "@mui/material";
+import { IconButton, Menu } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import React from "react";
-import Link from "next/link";
+import RTLNestedMenu from "./RTLNestedMenu";
 
+export const adminMenu = [
+  { label: "خانه", href: "/admin" },
+  { label: "دسته بندی", href: "/admin/categories" },
+  { label: "کالاها", href: "/admin/products" },
+  { label: "برندها", href: "/admin/brands" },
+  {
+    label: "پارامترها",
+    children: [
+      { label: "دسته بندی", href: "/admin/parameter-groups" },
+      { label: "پارامترها", href: "/admin/parameters" },
+    ],
+  },
+];
 const AdminMenu = () => {
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
+
   return (
-    <div>
-      <IconButton sx={{ color: "white" }} onClick={handleClick}>
+    <>
+      <IconButton
+        sx={{ color: "white" }}
+        onClick={(e) => setAnchorEl(e.currentTarget)}
+      >
         <MenuIcon />
       </IconButton>
+
       <Menu
-        id="basic-menu"
         anchorEl={anchorEl}
         open={open}
-        onClose={handleClose}
+        onClose={() => setAnchorEl(null)}
         slotProps={{
-          list: {
-            "aria-labelledby": "basic-button",
+          paper: {
+            sx: {
+              direction: "rtl",
+              width: "10rem",
+            },
           },
         }}
       >
-        <MenuItem onClick={handleClose}>
-          <Link href="/admin">خانه</Link>
-        </MenuItem>
-        <MenuItem onClick={handleClose}>
-          <Link href="/admin/categories">دسته بندی</Link>
-        </MenuItem>
-        <MenuItem onClick={handleClose}>
-          <Link href="/admin/products">کالاها</Link>
-        </MenuItem>
-        <MenuItem onClick={handleClose}>Logout</MenuItem>
+        <RTLNestedMenu
+          items={adminMenu}
+          parentClose={() => setAnchorEl(null)}
+        />
       </Menu>
-    </div>
+    </>
   );
 };
 
