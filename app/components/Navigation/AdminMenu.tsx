@@ -15,16 +15,27 @@ export const adminMenu = [
       { label: "پارامترها", href: "/admin/parameters" },
     ],
   },
+  // {
+  //   label: "حسابداری",
+  //   children: [
+  //     { label: "کالاها", href: "/admin/productsforaccounts" },
+  //     { label: "فاکتورها", href: "/admin/invoices" },
+  //   ],
+  // },
 ];
 const AdminMenu = () => {
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(
+    null,
+  );
   const open = Boolean(anchorEl);
 
   return (
     <>
       <IconButton
         sx={{ color: "white" }}
-        onClick={(e) => setAnchorEl(e.currentTarget)}
+        onClick={(e: React.MouseEvent<HTMLButtonElement>) =>
+          setAnchorEl(e.currentTarget)
+        }
       >
         <MenuIcon />
       </IconButton>

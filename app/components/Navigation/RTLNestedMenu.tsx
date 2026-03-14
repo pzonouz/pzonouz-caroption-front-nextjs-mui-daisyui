@@ -3,15 +3,24 @@ import ChevronLeft from "@mui/icons-material/ChevronLeft";
 import Link from "next/link";
 import { useState } from "react";
 
-const RTLNestedMenu = ({ items, parentClose }) => {
-  const [anchor, setAnchor] = useState(null);
+const RTLNestedMenu = ({
+  items,
+  parentClose,
+}: {
+  items: any;
+  parentClose: () => void;
+}) => {
+  const [anchor, setAnchor] = useState<HTMLElement | null>(null);
 
-  return items.map((item) =>
+  return items.map((item: any) =>
     item.children ? (
       <div
         key={item.label}
-        onMouseEnter={(e) => setAnchor(e.currentTarget)}
-        onMouseLeave={() => setAnchor(null)}
+        onClick={(e: React.MouseEvent<HTMLElement>) => {
+          if (!anchor) {
+            setAnchor(e.currentTarget);
+          }
+        }}
       >
         <MenuItem
           sx={{ justifyContent: "space-between", alignItems: "center" }}
@@ -26,11 +35,13 @@ const RTLNestedMenu = ({ items, parentClose }) => {
           onClose={() => setAnchor(null)}
           anchorOrigin={{ horizontal: "left", vertical: "top" }}
           transformOrigin={{ horizontal: "right", vertical: "top" }}
-          PaperProps={{
-            sx: {
-              direction: "rtl",
-              textAlign: "right",
-              minWidth: 180,
+          slotProps={{
+            paper: {
+              sx: {
+                direction: "rtl",
+                textAlign: "right",
+                minWidth: 180,
+              },
             },
           }}
         >
@@ -49,7 +60,9 @@ const RTLNestedMenu = ({ items, parentClose }) => {
         onClick={() => parentClose?.()}
         sx={{ justifyContent: "flex-end" }}
       >
-        <Link href={item.href}>{item.label}</Link>
+        <Link className="w-full text-right" href={item.href}>
+          {item.label}
+        </Link>
       </MenuItem>
     ) : (
       <MenuItem

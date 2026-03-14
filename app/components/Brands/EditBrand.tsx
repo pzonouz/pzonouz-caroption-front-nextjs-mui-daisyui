@@ -3,7 +3,8 @@ import { BrandForm } from "./BrandForm";
 import { useGetBrandQuery } from "@/app/lib/api";
 import { setModalId, setModalOpen } from "@/app/lib/features/modals";
 import { useAppDispatch, useAppSelector } from "@/app/lib/hooks";
-import { Box, Modal } from "@mui/material";
+import { Modal } from "@mui/material";
+import { InsideModal } from "../Surface/ModalInside";
 
 export const EditBrand = () => {
   const id = useAppSelector((state) => state?.modal?.id);
@@ -20,17 +21,9 @@ export const EditBrand = () => {
         dispatch(setModalId(""));
       }}
     >
-      <Box
-        sx={{
-          bgcolor: "background.paper",
-          border: "2px solid #000",
-          boxShadow: 24,
-          p: 4,
-        }}
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-5/6 "
-      >
+      <InsideModal>
         <BrandForm brand={brand} />
-      </Box>
+      </InsideModal>
     </Modal>
   );
 };

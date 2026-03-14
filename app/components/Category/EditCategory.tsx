@@ -4,6 +4,7 @@ import { useGetCategoryQuery } from "@/app/lib/api";
 import { setModalOpen } from "@/app/lib/features/modals";
 import { useAppDispatch, useAppSelector } from "@/app/lib/hooks";
 import { Box, Modal } from "@mui/material";
+import { InsideModal } from "../Surface/ModalInside";
 
 export const EditCategory = () => {
   const id = useAppSelector((state) => state?.modal?.id);
@@ -19,17 +20,9 @@ export const EditCategory = () => {
         dispatch(setModalOpen(false));
       }}
     >
-      <Box
-        sx={{
-          bgcolor: "background.paper",
-          border: "2px solid #000",
-          boxShadow: 24,
-          p: 4,
-        }}
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-5/6 "
-      >
+      <InsideModal>
         <CategoryForm category={category} />
-      </Box>
+      </InsideModal>
     </Modal>
   );
 };

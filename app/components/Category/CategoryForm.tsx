@@ -20,15 +20,11 @@ import {
 } from "@mui/material";
 import { useAppDispatch } from "@/app/lib/hooks";
 import { setModalOpen } from "@/app/lib/features/modals";
-import {
-  setSnackbarMessage,
-  setSnackbarOpen,
-  setSnackbarSeverity,
-} from "@/app/lib/features/snackbar";
 import { ImageHandlerComponent } from "../Image/ImageHandlerComponent";
 import AddToPhotosIcon from "@mui/icons-material/AddToPhotos";
 import { ImageShow } from "../Image/ImageShow";
 import { Slugify } from "@/app/utils";
+import { useSnackbarOpen } from "@/app/lib/CustomHooks/useSnackbarOpen";
 
 const CategoryForm = ({ category }: { category?: categoryType }) => {
   const {
@@ -55,7 +51,13 @@ const CategoryForm = ({ category }: { category?: categoryType }) => {
     ? { id: imageId, name: "", imageUrl: imageUrl ?? "" }
     : null;
 
+  const nameValue = watch("name");
+  useEffect(() => {
+    setValue("slug", Slugify(nameValue));
+  }, [nameValue]);
+
   const dispatch = useAppDispatch();
+  const snackbarOpen = useSnackbarOpen();
   const [open, setOpen] = useState<boolean>(false);
   const [createCategory, { isLoading }] = useCreateCategoryMutation();
   const [editCategory] = useEditCategoryMutation();
@@ -65,38 +67,30 @@ const CategoryForm = ({ category }: { category?: categoryType }) => {
       editCategory({ id: category?.id, ...data })
         .unwrap()
         .then(() => {
-          dispatch(setSnackbarSeverity("success"));
-          dispatch(setSnackbarMessage("با موفقیت انجام شد"));
-          dispatch(setSnackbarOpen(true));
+          snackbarOpen({ status: "success" });
           dispatch(setModalOpen(false));
         })
         .catch((err) => {
-          dispatch(setSnackbarSeverity("error"));
-          dispatch(setSnackbarMessage(translateErrors(err) ?? ""));
-          dispatch(setSnackbarOpen(true));
+          snackbarOpen({ status: "error", message: translateErrors(err) });
         });
     } else {
       createCategory(data)
         .unwrap()
         .then(() => {
-          dispatch(setSnackbarSeverity("success"));
-          dispatch(setSnackbarMessage("با موفقیت انجام شد"));
-          dispatch(setSnackbarOpen(true));
+          snackbarOpen({ status: "success" });
           reset({ name: "", description: "", parentId: null, imageId: null });
         })
         .catch((err) => {
-          dispatch(setSnackbarSeverity("error"));
-          dispatch(setSnackbarMessage(translateErrors(err) ?? ""));
-          dispatch(setSnackbarOpen(true));
+          snackbarOpen({ status: "error", message: translateErrors(err) });
         });
     }
   };
 
   useEffect(() => {
-    if (image) {
+    if (image?.id) {
       setValue("imageId", image.id);
     }
-  }, [image]);
+  }, [image?.id]);
 
   return (
     <Box
@@ -116,10 +110,6 @@ const CategoryForm = ({ category }: { category?: categoryType }) => {
               size="small"
               helperText={errors?.name?.message}
               className="w-full"
-              onChange={(e) => {
-                field.onChange(e.target?.value);
-                setValue("slug", Slugify(e.target?.value));
-              }}
             />
           )}
         ></Controller>

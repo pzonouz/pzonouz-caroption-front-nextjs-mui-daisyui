@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { ThemeProvider } from "@mui/material/styles";
 import theme from "./theme";
-import { vazirFont } from "./fonts";
+import { IranSansXFont } from "./fonts";
 import StoreProvider from "./components/Providers/StoreProvider";
 import { CacheProvider } from "./components/Providers/CacheProvider";
 import { AuthProvider } from "./components/Providers/AuthProvider";
@@ -19,16 +19,20 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" dir="rtl">
-      <body className={`${vazirFont.className} antialiased`}>
-        <StoreProvider>
-          <CacheProvider>
-            <ThemeProvider theme={theme}>
-              <AuthProvider>
-                <SnackbarProvider>{children}</SnackbarProvider>
-              </AuthProvider>
-            </ThemeProvider>
-          </CacheProvider>
-        </StoreProvider>
+      <body className={`${IranSansXFont.className} antialiased`}>
+        <div className="flex min-h-screen flex-col">
+          <main className="flex-1">
+            <StoreProvider>
+              <CacheProvider>
+                <ThemeProvider theme={theme}>
+                  <AuthProvider>
+                    <SnackbarProvider>{children}</SnackbarProvider>
+                  </AuthProvider>
+                </ThemeProvider>
+              </CacheProvider>
+            </StoreProvider>
+          </main>
+        </div>
       </body>
     </html>
   );

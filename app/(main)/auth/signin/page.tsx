@@ -16,6 +16,7 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
 
 const page = () => {
   const {
@@ -32,6 +33,7 @@ const page = () => {
   const [snackBarSeverity, setSnackbarSeverity] =
     useState<AlertColor>("success");
   const [signin, { isLoading }] = useSigninMutation();
+  const router = useRouter();
   const signinHandler = (data: signinType) => {
     signin(data)
       .unwrap()
@@ -39,6 +41,7 @@ const page = () => {
         setSnackbarSeverity("success");
         setSnackbarMessage("با موفقیت انجام شد");
         setOpen(true);
+        router.push("/profile");
       })
       .catch((err) => {
         setSnackbarSeverity("error");

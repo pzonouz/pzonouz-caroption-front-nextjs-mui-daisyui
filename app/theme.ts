@@ -1,10 +1,9 @@
 "use client";
 import { createTheme } from "@mui/material/styles";
-import { vazirFont } from "./fonts";
-
+import { IranSansXFont } from "./fonts";
 const theme = createTheme({
   typography: {
-    fontFamily: vazirFont.style.fontFamily,
+    fontFamily: IranSansXFont.style.fontFamily,
   },
   direction: "rtl",
 });

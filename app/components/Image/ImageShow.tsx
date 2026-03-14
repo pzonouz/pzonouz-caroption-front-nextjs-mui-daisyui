@@ -8,7 +8,6 @@ const ImageShow = ({ image }: { image: imageType | null }) => {
         <img
           src={`${process.env.NEXT_PUBLIC_BASE_URL}${image?.imageUrl}`}
           loading="lazy"
-          alt={image?.name!}
           className="w-56"
         />
       )}

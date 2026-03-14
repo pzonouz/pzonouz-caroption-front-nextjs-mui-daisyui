@@ -3,41 +3,48 @@
 import { CreateCategory } from "@/app/components/Category/CreateCategory";
 import { DeleteCategory } from "@/app/components/Category/DeleteCategory";
 import { EditCategory } from "@/app/components/Category/EditCategory";
-import { DataTable } from "@/app/components/Data/DataTable";
+import { SimpleDataGrid } from "@/app/components/Data/SimpleDataGrid";
 import { ActionMenu } from "@/app/components/shared/ActionMenu";
+import { SortFilterPaginationComponent } from "@/app/components/Data/SortFilterPaginationComponent";
 import { Collapsible } from "@/app/components/Surface/Collapsible";
 import { useGetCategoriesQuery } from "@/app/lib/api";
 import { useAppSelector } from "@/app/lib/hooks";
 import { Box, Typography } from "@mui/material";
-import { GridColDef } from "@mui/x-data-grid";
+import { useState } from "react";
+import { categoryType } from "@/app/schemas";
 
 const page = () => {
-  const { data: categories, isFetching } = useGetCategoriesQuery();
+  const [query, setQuery] = useState<string>("");
+  const { data: categories, isLoading } = useGetCategoriesQuery(query);
   const id = useAppSelector((state) => state?.modal?.id);
 
-  const columns: GridColDef<(typeof categories)[]>[] = [
+  const columns: any[] = [
     {
       field: "name",
       headerName: "نام دسته بندی",
       width: 200,
+      order: 1,
     },
     {
       field: "parentName",
       headerName: "والد",
-      width: 100,
+      width: 200,
+      order: 2,
     },
     {
       field: "actions",
       headerName: "عملیات",
-      width: 150,
-      editable: false,
-      sortable: false,
-      renderCell: (params) => (
-        // @ts-ignore
-        <ActionMenu entity={`/categories`} id={params.row?.id} />
-      ),
+      width: 50,
+      order: 3,
+      renderCell: (row: categoryType) => <ActionMenu id={row?.id} />,
     },
   ];
+
+  const categoryFieldMap = {
+    name: "نام",
+    parent_name: "والد",
+  };
+
   return (
     <div className="pt-12 px-4">
       <Collapsible>
@@ -52,10 +59,15 @@ const page = () => {
           <DeleteCategory />
         </Box>
       </Collapsible>
-      <DataTable
-        rows={categories ?? []}
+      <SortFilterPaginationComponent<categoryType>
+        setQuery={setQuery}
+        count={categories?.totalCount ?? 0}
+        fieldMap={categoryFieldMap}
+      />
+      <SimpleDataGrid
+        rows={categories?.rows ?? []}
         columns={columns}
-        loading={isFetching}
+        isLoading={isLoading}
       />
     </div>
   );

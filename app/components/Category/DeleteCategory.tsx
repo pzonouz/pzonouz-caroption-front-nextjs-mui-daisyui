@@ -8,6 +8,8 @@ import {
   setSnackbarOpen,
   setSnackbarSeverity,
 } from "@/app/lib/features/snackbar";
+import { useSnackbarOpen } from "@/app/lib/CustomHooks/useSnackbarOpen";
+import { translateErrors } from "@/app/lib/errorProcess";
 
 export const DeleteCategory = () => {
   const [deleteCategory, { isLoading }] = useDeleteCategoryMutation();
@@ -15,6 +17,7 @@ export const DeleteCategory = () => {
   const open = useAppSelector((state) => state?.modal?.open);
   const type = useAppSelector((state) => state?.modal?.type);
   const dispatch = useAppDispatch();
+  const snackbarOpen = useSnackbarOpen();
   return (
     <Modal
       open={Boolean(open) && type == "Delete"}
@@ -37,12 +40,19 @@ export const DeleteCategory = () => {
           <Button
             loading={isLoading}
             onClick={() => {
-              deleteCategory({ id: id }).then(() => {
-                dispatch(setModalOpen(false));
-                dispatch(setSnackbarOpen(true));
-                dispatch(setSnackbarSeverity("success"));
-                dispatch(setSnackbarMessage("با موفقیت انجام شد"));
-              });
+              deleteCategory({ id: id })
+                .unwrap()
+                .then(() => {
+                  dispatch(setModalOpen(false));
+                  snackbarOpen({ status: "success" });
+                })
+                .catch((err) => {
+                  dispatch(setModalOpen(false));
+                  snackbarOpen({
+                    status: "error",
+                    message: translateErrors(err),
+                  });
+                });
             }}
             variant="contained"
             color="error"

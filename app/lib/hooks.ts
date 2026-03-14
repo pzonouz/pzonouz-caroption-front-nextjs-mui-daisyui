@@ -1,18 +1,18 @@
 "use client";
-// import { useDispatch, useSelector, useStore } from "react-redux";
-// import type { RootState, AppDispatch, AppStore } from "./store";
-//
-// // Use throughout your app instead of plain `useDispatch` and `useSelector`
-// export const useAppDispatch = useDispatch.withTypes<AppDispatch>();
-// export const useAppSelector = useSelector.withTypes<RootState>();
-// export const useAppStore = useStore.withTypes<AppStore>();
-
 import { useDispatch, useSelector, useStore } from "react-redux";
 import type { RootState, AppDispatch, AppStore } from "./store";
 
-export const useAppDispatch = () => useDispatch<AppDispatch>();
+// Use throughout your app instead of plain `useDispatch` and `useSelector`
+export const useAppDispatch = useDispatch.withTypes<AppDispatch>();
+export const useAppSelector = useSelector.withTypes<RootState>();
+export const useAppStore = useStore.withTypes<AppStore>();
 
-export const useAppSelector = <T>(selector: (state: RootState) => T) =>
-  useSelector(selector);
-
-export const useAppStore = () => useStore<AppStore>();
+// import { useDispatch, useSelector, useStore } from "react-redux";
+// import type { RootState, AppDispatch, AppStore } from "./store";
+//
+// export const useAppDispatch = () => useDispatch<AppDispatch>();
+//
+// export const useAppSelector = <T>(selector: (state: RootState) => T) =>
+//   useSelector(selector);
+//
+// export const useAppStore = () => useStore<AppStore>();

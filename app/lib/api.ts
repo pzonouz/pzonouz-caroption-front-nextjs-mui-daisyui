@@ -1,8 +1,15 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { createApi, fetchBaseQuery, retry } from "@reduxjs/toolkit/query/react";
 import {
+  brandsType,
   brandType,
+  categoriesType,
   categoryType,
   imageType,
+  parameterGroupsType,
+  parameterGroupType,
+  parametersType,
+  parameterType,
+  productsType,
   productType,
   signinType,
   signupType,
@@ -15,10 +22,20 @@ export const api = createApi({
     baseUrl: `${process.env.NEXT_PUBLIC_BACKEND_URL}`,
   }),
 
-  tagTypes: ["categories", "products", "brands", "images"],
+  tagTypes: [
+    "categories",
+    "products",
+    "brands",
+    "images",
+    "parameterGroups",
+    "parameters",
+  ],
   endpoints: (builder) => ({
-    getCategories: builder.query<categoryType[], void>({
-      query: () => `categories`,
+    getCategories: builder.query<categoriesType, string | null>({
+      query: (query) => {
+        if (query) return `categories${query}`;
+        return `categories`;
+      },
       providesTags: ["categories"],
     }),
     getParentCategories: builder.query<categoryType[], void>({
@@ -55,8 +72,15 @@ export const api = createApi({
       }),
       invalidatesTags: ["categories"],
     }),
-    getProducts: builder.query<productType[], void>({
-      query: () => `products`,
+    getProducts: builder.query<productsType, string>({
+      query: (query) => {
+        if (query) return `products${query}`;
+        return `products`;
+      },
+      providesTags: ["products"],
+    }),
+    getProductsForAccounts: builder.query<productType[], void>({
+      query: () => `products_for_accounts`,
       providesTags: ["products"],
     }),
     getProduct: builder.query<productType, string>({
@@ -89,8 +113,11 @@ export const api = createApi({
       }),
       invalidatesTags: ["products"],
     }),
-    getBrands: builder.query<brandType[], void>({
-      query: () => `brands`,
+    getBrands: builder.query<brandsType, string | null>({
+      query: (query) => {
+        if (query) return `brands${query}`;
+        return `brands`;
+      },
       providesTags: ["brands"],
     }),
     getBrand: builder.query<brandType, string>({
@@ -150,12 +177,93 @@ export const api = createApi({
       }),
       invalidatesTags: ["images"],
     }),
-    deleteImage: builder.mutation<void, Pick<imageType, "id">>({
+    deleteImage: builder.mutation<void, string>({
       query: (id) => ({
         url: `images/${id}`,
         method: "DELETE",
       }),
       invalidatesTags: ["images"],
+    }),
+    getParameterGroups: builder.query<parameterGroupsType, string>({
+      query: (query) => {
+        if (query) return `parameter-groups${query}`;
+        return `parameter-groups`;
+      },
+      providesTags: ["parameterGroups"],
+    }),
+    getParameterGroup: builder.query<parameterGroupType, string>({
+      query: (id: string) => `parameter-groups/${id}`,
+      providesTags: ["parameterGroups"],
+    }),
+    createParameterGroup: builder.mutation<void, Partial<parameterGroupType>>({
+      query: ({ ...post }) => ({
+        url: `parameter-groups`,
+        method: "POST",
+        body: post,
+      }),
+      invalidatesTags: ["parameterGroups"],
+    }),
+    editParameterGroup: builder.mutation<
+      void,
+      Partial<parameterGroupType> & Pick<parameterGroupType, "id">
+    >({
+      query: ({ id, ...patch }) => ({
+        url: `parameter-groups/${id}`,
+        method: "PATCH",
+        body: patch,
+      }),
+      invalidatesTags: ["parameterGroups"],
+    }),
+    deleteParameterGroup: builder.mutation<
+      void,
+      Pick<parameterGroupType, "id">
+    >({
+      query: ({ id }) => ({
+        url: `parameter-groups/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["parameterGroups"],
+    }),
+    getParametersByCategory: builder.query<parameterType[], string>({
+      query: (id: string) => `parameters/by-category/${id}`,
+      providesTags: ["parameters"],
+    }),
+    getParameters: builder.query<parametersType, string>({
+      query: (query) => {
+        if (query) return `parameters${query}`;
+        return `parameters`;
+      },
+      providesTags: ["parameters"],
+    }),
+    getParameter: builder.query<parameterType, string>({
+      query: (id: string) => `parameters/${id}`,
+      providesTags: ["parameters"],
+    }),
+    createParameter: builder.mutation<void, Partial<parameterType>>({
+      query: ({ ...post }) => ({
+        url: `parameters`,
+        method: "POST",
+        body: post,
+      }),
+      invalidatesTags: ["parameters"],
+    }),
+    editParameter: builder.mutation<
+      void,
+      Partial<parameterType> & Pick<parameterType, "id">
+    >({
+      query: ({ id, ...patch }) => ({
+        url: `parameters/${id}`,
+        method: "PATCH",
+        body: patch,
+      }),
+      invalidatesTags: ["parameters"],
+    }),
+    deleteParameter: builder.mutation<void, Pick<parameterType, "id">>({
+      query: ({ id }) => ({
+        url: `parameters/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["parameters"],
     }),
     signup: builder.mutation<void, Partial<signupType>>({
       query: ({ ...patch }) => ({
@@ -182,6 +290,7 @@ export const {
   useEditCategoryMutation,
   useDeleteCategoryMutation,
   useGetProductsQuery,
+  useGetProductsForAccountsQuery,
   useGetProductQuery,
   useCreateProductMutation,
   useEditProductMutation,
@@ -191,6 +300,17 @@ export const {
   useCreateBrandMutation,
   useEditBrandMutation,
   useDeleteBrandMutation,
+  useGetParameterGroupsQuery,
+  useGetParameterGroupQuery,
+  useCreateParameterGroupMutation,
+  useEditParameterGroupMutation,
+  useDeleteParameterGroupMutation,
+  useGetParametersQuery,
+  useGetParametersByCategoryQuery,
+  useGetParameterQuery,
+  useCreateParameterMutation,
+  useEditParameterMutation,
+  useDeleteParameterMutation,
   useGetimagesQuery,
   useGetImageQuery,
   useCreateImageMutation,

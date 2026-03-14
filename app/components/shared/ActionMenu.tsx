@@ -9,11 +9,11 @@ import {
   setModalType,
 } from "@/app/lib/features/modals";
 
-const ActionMenu = ({ id }: { entity: string; id: string }) => {
+const ActionMenu = ({ id }: { id: string | null | undefined }) => {
   const dispatch = useAppDispatch();
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   return (
-    <div>
+    <div className="w-full flex justify-center">
       <IconButton
         onClick={(event) => {
           setAnchorEl(event.currentTarget);

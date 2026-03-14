@@ -1,38 +1,42 @@
 "use client";
 
-import { DataTable } from "@/app/components/Data/DataTable";
 import { CreateBrand } from "@/app/components/Brands/CreateBrand";
 import { useGetBrandsQuery } from "@/app/lib/api";
 import { useAppSelector } from "@/app/lib/hooks";
 import { Box, Typography } from "@mui/material";
-import { GridColDef } from "@mui/x-data-grid";
 import { Collapsible } from "@/app/components/Surface/Collapsible";
 import { EditBrand } from "@/app/components/Brands/EditBrand";
 import { DeleteBrand } from "@/app/components/Brands/DeleteBrand";
 import { ActionMenu } from "@/app/components/shared/ActionMenu";
+import { SimpleDataGrid } from "@/app/components/Data/SimpleDataGrid";
+import { brandType } from "@/app/schemas";
+import { SortFilterPaginationComponent } from "@/app/components/Data/SortFilterPaginationComponent";
+import { useState } from "react";
 
 const page = () => {
-  const { data: brands, isFetching } = useGetBrandsQuery();
+  const [query, setQuery] = useState<string>("");
+  const { data: brands, isLoading } = useGetBrandsQuery(query);
   const id = useAppSelector((state) => state?.modal?.id);
 
-  const columns: GridColDef<(typeof brands)[]>[] = [
+  const columns: any[] = [
     {
       field: "name",
       headerName: "نام برند",
-      width: 300,
+      width: 200,
+      order: 1,
     },
     {
       field: "actions",
       headerName: "عملیات",
-      width: 150,
-      editable: false,
-      sortable: false,
-      renderCell: (params) => (
-        // @ts-ignore
-        <ActionMenu entity={`/brands`} id={params.row?.id} />
-      ),
+      width: 100,
+      order: 2,
+      renderCell: (row: brandType) => <ActionMenu id={row?.id} />,
     },
   ];
+  const brandFieldMap = {
+    name: "نام",
+  };
+
   return (
     <div className="pt-12 px-4">
       <Collapsible>
@@ -48,7 +52,16 @@ const page = () => {
           <DeleteBrand />
         </Box>
       </Collapsible>
-      <DataTable rows={brands ?? []} columns={columns} loading={isFetching} />
+      <SortFilterPaginationComponent<brandType>
+        count={brands?.totalCount ?? 0}
+        setQuery={setQuery}
+        fieldMap={brandFieldMap}
+      />
+      <SimpleDataGrid
+        columns={columns}
+        rows={brands?.rows ?? []}
+        isLoading={isLoading}
+      />
     </div>
   );
 };
