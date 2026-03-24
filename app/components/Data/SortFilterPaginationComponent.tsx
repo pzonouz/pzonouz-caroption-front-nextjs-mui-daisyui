@@ -54,7 +54,7 @@ const SortFilterPaginationComponent = <T extends { name: string }>({
     setQuery(query);
   }, [sort, filters, perPage, page]);
   return (
-    <Box className="border-2 border-solid border-slate-600 rounded-lg my-2">
+    <Box className="border-2 border-solid border-slate-600 rounded-lg my-2 print:hidden">
       <Box>
         <Box className="p-2">
           <Sort<T> fieldsMap={fieldMap} sort={sort} setSort={setSort} />
@@ -77,6 +77,10 @@ const SortFilterPaginationComponent = <T extends { name: string }>({
           <option value={30}>30</option>
           <option value={40}>40</option>
           <option value={50}>50</option>
+          <option value={100}>100</option>
+          <option value={200}>200</option>
+          <option value={400}>400</option>
+          <option value={800}>800</option>
         </NativeSelect>
       </Box>
       <Box className="flex flex-row items-center gap-6 px-6">

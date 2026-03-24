@@ -7,7 +7,7 @@ import RemoveIcon from "@mui/icons-material/Remove";
 const Collapsible = ({ children }: { children: React.ReactNode }) => {
   const [open, setOpen] = useState(false);
   return (
-    <Box sx={{ my: "1rem" }}>
+    <Box sx={{ my: "1rem" }} className="print:hidden">
       <IconButton onClick={() => setOpen(!open)}>
         {open ? <RemoveIcon /> : <AddIcon />}
       </IconButton>

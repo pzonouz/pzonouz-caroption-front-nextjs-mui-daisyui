@@ -32,7 +32,7 @@ import { setModalOpen } from "@/app/lib/features/modals";
 import AddToPhotosIcon from "@mui/icons-material/AddToPhotos";
 import { ImageHandlerComponent } from "../Image/ImageHandlerComponent";
 import { ImageShow } from "../Image/ImageShow";
-import { FormatNumber, Slugify } from "@/app/utils";
+import { FormatNumber, NormalizeForFront, Slugify } from "@/app/utils";
 import { useSnackbarOpen } from "@/app/lib/CustomHooks/useSnackbarOpen";
 
 const ProductForm = ({ product }: { product?: productType }) => {
@@ -45,7 +45,10 @@ const ProductForm = ({ product }: { product?: productType }) => {
     formState: { errors },
   } = useForm<productType>({
     resolver: zodResolver(productSchema),
-    values: product ?? {
+    values: NormalizeForFront(product, [
+      "productParameterValues",
+      "parameters",
+    ]) ?? {
       name: "",
       description: "",
       info: "",
@@ -70,7 +73,28 @@ const ProductForm = ({ product }: { product?: productType }) => {
     },
   );
   useEffect(() => {
-    reset(product);
+    if (product)
+      reset(
+        NormalizeForFront(product, [
+          "productParameterValues",
+          "parameters",
+        ]) ?? {
+          name: "",
+          description: "",
+          info: "",
+          price: "",
+          count: "",
+          categoryId: "",
+          brandId: "",
+          slug: "",
+          imageUrl: "",
+          position: "",
+          code: "",
+          show: false,
+          productParameterValues: [],
+          parameters: [],
+        },
+      );
   }, [product]);
   useEffect(() => {
     if (parameters && !product) {
@@ -111,8 +135,8 @@ const ProductForm = ({ product }: { product?: productType }) => {
   const [createProduct, { isLoading }] = useCreateProductMutation();
   const [editProduct] = useEditProductMutation();
 
-  const { data: categories } = useGetCategoriesQuery();
-  const { data: brands } = useGetBrandsQuery();
+  const { data: categories } = useGetCategoriesQuery("");
+  const { data: brands } = useGetBrandsQuery("");
 
   const snackbarOpen = useSnackbarOpen();
   const productHandler = (data: productType) => {
@@ -184,6 +208,13 @@ const ProductForm = ({ product }: { product?: productType }) => {
           control={control}
           render={({ field }) => (
             <TextField {...field} label="توضیح کوتاه" size="small" />
+          )}
+        />
+        <Controller
+          name="position"
+          control={control}
+          render={({ field }) => (
+            <TextField {...field} label="مکان" size="small" />
           )}
         />
 

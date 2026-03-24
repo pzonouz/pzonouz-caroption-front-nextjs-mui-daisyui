@@ -36,7 +36,7 @@ const ParameterForm = ({ parameter }: { parameter?: parameterType }) => {
     formState: { errors },
   } = useForm<parameterType>({
     resolver: zodResolver(parameterSchema),
-    values: NormalizeForFront(parameter, "selectables") ?? {
+    values: NormalizeForFront(parameter, ["selectables"]) ?? {
       name: "",
       description: "",
       parameterGroup: "",

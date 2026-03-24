@@ -3,7 +3,7 @@ import { CategoryForm } from "./CategoryForm";
 import { useGetCategoryQuery } from "@/app/lib/api";
 import { setModalOpen } from "@/app/lib/features/modals";
 import { useAppDispatch, useAppSelector } from "@/app/lib/hooks";
-import { Box, Modal } from "@mui/material";
+import { Modal } from "@mui/material";
 import { InsideModal } from "../Surface/ModalInside";
 
 export const EditCategory = () => {

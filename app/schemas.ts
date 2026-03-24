@@ -1,4 +1,5 @@
 import * as z from "zod";
+import { describe } from "zod/v4/core";
 export const categorySchema = z.object({
   id: z.string().optional().nullish().nullable(),
   name: z.string().min(1, { message: "نام را وارد کنید" }),
@@ -17,6 +18,29 @@ export const brandSchema = z.object({
   id: z.string().optional().nullish().nullable(),
   name: z.string().min(1, { message: "نام را وارد کنید" }),
   description: z.string().optional().nullish().nullable(),
+  createdAt: z.string().optional().nullish().nullable(),
+  updatedAt: z.string().optional().nullish().nullable(),
+});
+export const invoiceItemSchema = z.object({
+  id: z.string().optional().nullish().nullable(),
+  description: z.string().optional().nullish().nullable(),
+  price: z.string().optional().nullish().nullable(),
+  productId: z.string().optional().nullish().nullable(),
+  productName: z.string().optional().nullish().nullable(),
+  count: z.string().optional().nullish().nullable(),
+  discount: z.string().optional().nullish().nullable(),
+  createdAt: z.string().optional().nullish().nullable(),
+  updatedAt: z.string().optional().nullish().nullable(),
+});
+export const invoiceSchema = z.object({
+  id: z.string().optional().nullish().nullable(),
+  personId: z.string().min(1, { message: "نام را وارد کنید" }),
+  personName: z.string().optional().nullish().nullable(),
+  description: z.string().optional().nullish().nullable(),
+  discount: z.string().optional().nullish().nullable(),
+  type: z.enum(["SELL", "BUY", "RENT"]),
+  items: z.array(invoiceItemSchema).min(1),
+  date: z.date().optional(),
   createdAt: z.string().optional().nullish().nullable(),
   updatedAt: z.string().optional().nullish().nullable(),
 });
@@ -82,6 +106,15 @@ export const productSchema = z.object({
   createdAt: z.string().optional().nullish().nullable(),
   updatedAt: z.string().optional().nullish().nullable(),
 });
+export const personSchema = z.object({
+  id: z.string().optional().nullish().nullable(),
+  firstName: z.string().optional().nullish().nullable(),
+  name: z.string().min(1, { message: "نام خانوادگی را وارد کنید" }),
+  phoneNumber: z.string().min(1, { message: "شماره تلفن را وارد کنید" }),
+  address: z.string().optional().nullish().nullable(),
+  createdAt: z.string().optional().nullish().nullable(),
+  updatedAt: z.string().optional().nullish().nullable(),
+});
 export const signupSchema = z
   .object({
     email: z.email({ message: "ساختار ایمیل درست نیست" }),
@@ -128,6 +161,17 @@ export type parametersType = {
   rows: z.infer<typeof parameterSchema>[];
   totalCount: number;
 };
+export type invoiceType = z.infer<typeof invoiceSchema>;
+export type invoicesType = {
+  rows: z.infer<typeof invoiceSchema>[];
+  totalCount: number;
+};
+export type personType = z.infer<typeof personSchema>;
+export type personsType = {
+  rows: z.infer<typeof personSchema>[];
+  totalCount: number;
+};
+export type invoiceItemType = z.infer<typeof invoiceItemSchema>;
 export type productParameterValueType = z.infer<
   typeof productParameterValueSchema
 >;

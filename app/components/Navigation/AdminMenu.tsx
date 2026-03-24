@@ -15,13 +15,19 @@ export const adminMenu = [
       { label: "پارامترها", href: "/admin/parameters" },
     ],
   },
-  // {
-  //   label: "حسابداری",
-  //   children: [
-  //     { label: "کالاها", href: "/admin/productsforaccounts" },
-  //     { label: "فاکتورها", href: "/admin/invoices" },
-  //   ],
-  // },
+  {
+    label: "حسابداری",
+    children: [
+      { label: "کالاها", href: "/admin/productsforaccounts" },
+      {
+        label: "فاکتورها",
+        children: [
+          { label: "فروش", href: "/admin/sell-invoices" },
+          { label: "خرید", href: "/admin/buy-invoices" },
+        ],
+      },
+    ],
+  },
 ];
 const AdminMenu = () => {
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(

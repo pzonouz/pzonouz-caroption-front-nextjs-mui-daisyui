@@ -58,6 +58,9 @@ const page = () => {
           <DeleteParameterGroup />
         </Box>
       </Collapsible>
+      <Typography className="text-2xl font-bold text-center">
+        دسته بندی پارامترها
+      </Typography>
       <SortFilterPaginationComponent
         fieldMap={parameterGroupFieldMap}
         setQuery={setQuery}

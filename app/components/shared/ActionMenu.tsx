@@ -8,8 +8,17 @@ import {
   setModalOpen,
   setModalType,
 } from "@/app/lib/features/modals";
+import Link from "next/link";
 
-const ActionMenu = ({ id }: { id: string | null | undefined }) => {
+const ActionMenu = ({
+  id,
+  hasView = false,
+  entity,
+}: {
+  id: string | null | undefined;
+  hasView?: boolean;
+  entity?: string;
+}) => {
   const dispatch = useAppDispatch();
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   return (
@@ -33,7 +42,7 @@ const ActionMenu = ({ id }: { id: string | null | undefined }) => {
         <MenuItem
           onClick={() => {
             dispatch(setModalOpen(true));
-            dispatch(setModalId(id));
+            dispatch(setModalId(id || ""));
             dispatch(setModalType("Edit"));
             setAnchorEl(null);
           }}
@@ -43,13 +52,32 @@ const ActionMenu = ({ id }: { id: string | null | undefined }) => {
         <MenuItem
           onClick={() => {
             dispatch(setModalOpen(true));
-            dispatch(setModalId(id));
+            dispatch(setModalId(id || ""));
             dispatch(setModalType("Delete"));
             setAnchorEl(null);
           }}
         >
           حذف
         </MenuItem>
+        {hasView && (
+          <MenuItem
+            onClick={() => {
+              const width = 800;
+              const height = 600;
+
+              const left = window.screen.width / 2 - width / 2;
+              const top = window.screen.height / 2 - height / 2;
+
+              window.open(
+                `${process.env.NEXT_PUBLIC_BASE_URL}nolayout/${entity}/${id}`,
+                "اشخاص",
+                `width=${width},height=${height},top=${top},left=${left},resizable=yes,scrollbars=yes`,
+              );
+            }}
+          >
+            مشاهده
+          </MenuItem>
+        )}
       </Menu>
     </div>
   );

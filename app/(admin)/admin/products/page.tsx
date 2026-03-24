@@ -12,7 +12,6 @@ import { useAppSelector } from "@/app/lib/hooks";
 import { productType } from "@/app/schemas";
 import { FormatNumber } from "@/app/utils";
 import { Box, Typography } from "@mui/material";
-import { generateKey } from "node:crypto";
 import { useState } from "react";
 
 const page = () => {
@@ -48,16 +47,22 @@ const page = () => {
       order: 4,
     },
     {
+      field: "position",
+      headerName: "مکان",
+      width: 100,
+      order: 5,
+    },
+    {
       field: "brandName",
       headerName: "برند",
       width: 100,
-      order: 5,
+      order: 6,
     },
     {
       field: "generated",
       headerName: "تولید شده",
       width: 100,
-      order: 6,
+      order: 7,
       transformFunction: (input: Boolean) => {
         if (input) {
           return "بله";
@@ -69,7 +74,7 @@ const page = () => {
       field: "actions",
       headerName: "عملیات",
       width: 100,
-      order: 7,
+      order: 8,
       renderCell: (row: productType) => <ActionMenu id={row?.id} />,
     },
   ];
@@ -78,6 +83,7 @@ const page = () => {
     category_name: "دسته بندی",
     price: "قیمت",
     count: "تعداد",
+    position: "مکان",
     generated: "تولیدشده",
   };
 
@@ -96,6 +102,7 @@ const page = () => {
           <Deleteproduct />
         </Box>
       </Collapsible>
+      <Typography className="text-2xl font-bold text-center">کالاها</Typography>
       <SortFilterPaginationComponent
         fieldMap={productFieldMap}
         setQuery={setQuery}

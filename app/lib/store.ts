@@ -3,6 +3,7 @@ import { api } from "./api";
 import authReducer from "./features/auth";
 import modalReducer from "./features/modals";
 import snackbarReducer from "./features/snackbar";
+import invoiceReducer from "./features/invoices";
 
 export const makeStore = () => {
   const rootReducer = combineReducers({
@@ -10,6 +11,7 @@ export const makeStore = () => {
     auth: authReducer,
     modal: modalReducer,
     snackbar: snackbarReducer,
+    invoice: invoiceReducer,
   });
   return configureStore({
     reducer: rootReducer,

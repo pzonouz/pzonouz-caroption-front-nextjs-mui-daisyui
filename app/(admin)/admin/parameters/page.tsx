@@ -57,6 +57,9 @@ const page = () => {
           <DeleteParameter />
         </Box>
       </Collapsible>
+      <Typography className="text-2xl font-bold text-center">
+        پارامترها
+      </Typography>
       <SortFilterPaginationComponent
         count={parameters?.totalCount ?? 0}
         setQuery={setQuery}

@@ -1,4 +1,4 @@
-import { Box, CircularProgress } from "@mui/material";
+import { Box, Button, CircularProgress } from "@mui/material";
 import { ColDef, SimpleDataGridProps } from "@/app/schemas";
 import { useEffect, useState } from "react";
 import List from "@mui/material/List";
@@ -29,8 +29,16 @@ const SimpleDataGrid = ({ columns, rows, isLoading }: SimpleDataGridProps) => {
     );
   }, [checkedColumns]);
   return (
-    <Box className="pb-5">
-      <List className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 items-center">
+    <Box className="pb-5" width={widthSum}>
+      <Button
+        onClick={(e) => {
+          e.preventDefault();
+          window.print();
+        }}
+      >
+        نسخه چاپی
+      </Button>
+      <List className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 items-center print:hidden">
         {columns.map((item) => {
           const labelId = `checkbox-list-label-${item}`;
 
@@ -55,57 +63,51 @@ const SimpleDataGrid = ({ columns, rows, isLoading }: SimpleDataGridProps) => {
           );
         })}
       </List>
-      <Box className="flex flex-row items-center w-full">
+      <Box className="flex flex-row items-center print:border">
         {checkedColumns
           ?.sort((a, b) => a.order - b.order)
           ?.map((item) => (
             <Box
               width={item?.width}
-              className={`bg-slate-600 text-white p-2 text-center flex flex-row items-center justify-center gap-2`}
+              className={`bg-slate-600 text-white p-2 text-center flex flex-row items-center justify-center gap-2 print:border-l `}
               key={item?.headerName}
             >
-              <Box>{item?.headerName}</Box>
+              {item?.headerName}
             </Box>
           ))}
       </Box>
-      <Box width={widthSum}>
+      <>
         {isLoading ? (
-          <Box className="w-full h-36 grid place-items-center">
+          <Box className=" h-36 grid place-items-center">
             <CircularProgress />
           </Box>
         ) : (
-          rows?.map((row, _) => {
+          rows?.map((row, rowIndex) => {
             return (
               <Box
-                key={row["name"]}
-                className="flex flex-row items-center even:bg-slate-200 w-full"
+                width={widthSum}
+                key={row["name"] || row["id"]}
+                className="flex flex-row items-stretch even:bg-slate-200 print:border-b"
               >
-                {checkedColumns?.map((col, _) =>
-                  col?.field == "actions" ? (
-                    <Box
-                      width={col?.width}
-                      key={col?.field}
-                      className="p-2 text-center"
-                    >
-                      {col?.renderCell(row)}
-                    </Box>
-                  ) : (
-                    <Box
-                      width={col?.width}
-                      className=" p-2 text-center"
-                      key={col?.field}
-                    >
-                      {col?.transformFunction
-                        ? col?.transformFunction(row[col.field])
+                {checkedColumns?.map((col) => (
+                  <Box
+                    key={col?.field}
+                    width={col?.width}
+                    minWidth={col?.width}
+                    className="p-2 text-center print:border-l print:first:border-r"
+                  >
+                    {col?.renderCell
+                      ? col.renderCell(row, rowIndex)
+                      : col?.transformFunction
+                        ? col.transformFunction(row[col.field])
                         : row[col.field]}
-                    </Box>
-                  ),
-                )}
+                  </Box>
+                ))}
               </Box>
             );
           })
         )}
-      </Box>
+      </>
     </Box>
   );
 };

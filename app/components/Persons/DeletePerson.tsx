@@ -1,18 +1,13 @@
 "use client";
-import { useDeleteCategoryMutation } from "@/app/lib/api";
-import { setModalOpen, setModalType } from "@/app/lib/features/modals";
+import { setModalOpen } from "@/app/lib/features/modals";
 import { useAppDispatch, useAppSelector } from "@/app/lib/hooks";
 import { Box, Button, Modal, Typography } from "@mui/material";
-import {
-  setSnackbarMessage,
-  setSnackbarOpen,
-  setSnackbarSeverity,
-} from "@/app/lib/features/snackbar";
 import { useSnackbarOpen } from "@/app/lib/CustomHooks/useSnackbarOpen";
 import { translateErrors } from "@/app/lib/errorProcess";
+import { useDeletePersonMutation } from "@/app/lib/api";
 
-export const DeleteCategory = () => {
-  const [deleteCategory, { isLoading }] = useDeleteCategoryMutation();
+export const DeletePerson = () => {
+  const [deleteCategory, { isLoading }] = useDeletePersonMutation();
   const id = useAppSelector((state) => state?.modal?.id);
   const open = useAppSelector((state) => state?.modal?.open);
   const type = useAppSelector((state) => state?.modal?.type);

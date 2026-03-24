@@ -5,6 +5,7 @@ import {
   setSnackbarSeverity,
 } from "./lib/features/snackbar";
 import { useAppDispatch } from "./lib/hooks";
+import { invoiceItemType } from "./schemas";
 
 export const Slugify = (str: string) =>
   str
@@ -33,7 +34,7 @@ export const SnackbarOpen = ({
   }
   dispatch(setSnackbarOpen(true));
 };
-export const NormalizeForFront = (inputObject: any, arrayField?: string) => {
+export const NormalizeForFront = (inputObject: any, arrayFields?: string[]) => {
   if (!inputObject) return null;
 
   const entries = Object.entries(inputObject);
@@ -43,7 +44,7 @@ export const NormalizeForFront = (inputObject: any, arrayField?: string) => {
     if (value == null) {
       // Check for null or undefined
       // If this is the specified array field, set to empty array
-      if (key === arrayField) {
+      if (arrayFields?.includes(key)) {
         outputObject[key] = [];
       } else {
         outputObject[key] = "";
@@ -65,6 +66,18 @@ export const NormalizeForBack = (inputObject: any) => {
   });
   return outputObject;
 };
+export const getInvoiceTotal = (rows: invoiceItemType[]) => {
+  const total = rows?.reduce((acc, current) => {
+    const price = Number(current?.price?.replaceAll(",", "")) || 0;
+    const count = Number(current?.count?.replaceAll(",", "")) || 0;
+    const discount = Number(current?.discount?.replaceAll(",", "")) || 0;
+    const priceCountWithDiscount = price * count - discount;
+    return acc + priceCountWithDiscount;
+  }, 0);
+
+  return FormatNumber(String(total));
+};
+
 export const FormatNumber = (value: string) =>
   value.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 
@@ -125,3 +138,20 @@ export const ToEnglishDigits = (value: string) =>
   value.replace(/[۰-۹٠-٩]/g, (d) =>
     ("۰۱۲۳۴۵۶۷۸۹٠١٢٣٤٥٦٧٨٩".indexOf(d) % 10).toString(),
   );
+
+export const PriceCount = (price: string, count: string): string => {
+  return FormatNumber(
+    (
+      Number(count?.replaceAll(",", "")) * Number(price?.replaceAll(",", ""))
+    ).toString(),
+  );
+};
+
+export const Total = (discount: string, priceCount: string): string => {
+  return FormatNumber(
+    (
+      Number(priceCount?.replaceAll(",", "")) -
+      Number(discount?.replaceAll(",", ""))
+    ).toString(),
+  );
+};

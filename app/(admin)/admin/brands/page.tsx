@@ -52,6 +52,7 @@ const page = () => {
           <DeleteBrand />
         </Box>
       </Collapsible>
+      <Typography className="text-2xl font-bold text-center">برندها</Typography>
       <SortFilterPaginationComponent<brandType>
         count={brands?.totalCount ?? 0}
         setQuery={setQuery}

@@ -1,6 +1,7 @@
 "use client";
 
-import { DataTable } from "@/app/components/Data/DataTable";
+import { SimpleDataGrid } from "@/app/components/Data/SimpleDataGrid";
+import { SortFilterPaginationComponent } from "@/app/components/Data/SortFilterPaginationComponent";
 import { CreateProduct } from "@/app/components/Products/CreateProduct";
 import { Deleteproduct } from "@/app/components/Products/DeleteProduct";
 import { EditProduct } from "@/app/components/Products/EditProduct";
@@ -8,47 +9,84 @@ import { ActionMenu } from "@/app/components/shared/ActionMenu";
 import { Collapsible } from "@/app/components/Surface/Collapsible";
 import { useGetProductsForAccountsQuery } from "@/app/lib/api";
 import { useAppSelector } from "@/app/lib/hooks";
+import { productType } from "@/app/schemas";
 import { FormatNumber } from "@/app/utils";
 import { Box, Typography } from "@mui/material";
-import { GridColDef } from "@mui/x-data-grid";
+import { useState } from "react";
 
 const page = () => {
-  const { data: products, isFetching } = useGetProductsForAccountsQuery();
+  const [query, setQuery] = useState<string>("");
+  const { data: products, isFetching } = useGetProductsForAccountsQuery(query);
   const id = useAppSelector((state) => state?.modal?.id);
 
-  const columns: GridColDef<(typeof products)[]>[] = [
+  const columns: any[] = [
+    {
+      field: "index",
+      headerName: "ردیف",
+      width: 50,
+      order: 1,
+      renderCell: (row: productType, rowIndex: number) => rowIndex + 1,
+    },
     {
       field: "name",
       headerName: "نام کالا",
-      width: 300,
+      width: 170,
+      order: 2,
+    },
+    {
+      field: "categoryName",
+      headerName: "دسته بندی",
+      width: 170,
+      order: 3,
     },
     {
       field: "count",
       headerName: "تعداد",
-      width: 50,
+      width: 100,
+      transformFunction: FormatNumber,
+      order: 4,
     },
     {
       field: "price",
       headerName: "قیمت",
       width: 100,
-      renderCell: (params) => (
-        //@ts-ignore
-        <p>{FormatNumber(params.row?.price)}</p>
-      ),
+      transformFunction: FormatNumber,
+      order: 5,
     },
-
+    {
+      field: "position",
+      headerName: "مکان",
+      width: 100,
+      order: 6,
+    },
+    {
+      field: "brandName",
+      headerName: "برند",
+      width: 100,
+      order: 7,
+    },
+    {
+      field: "code",
+      headerName: "کد",
+      width: 100,
+      order: 8,
+    },
     {
       field: "actions",
       headerName: "عملیات",
-      width: 150,
-      editable: false,
-      sortable: false,
-      renderCell: (params) => (
-        // @ts-ignore
-        <ActionMenu entity={`/products`} id={params.row?.id} />
-      ),
+      width: 100,
+      order: 9,
+      renderCell: (row: productType) => <ActionMenu id={row?.id} />,
     },
   ];
+  const productFieldMap = {
+    name: "نام",
+    category_name: "دسته بندی",
+    price: "قیمت",
+    count: "تعداد",
+    position: "مکان",
+    code: "کد",
+  };
   return (
     <div className="pt-12 px-4">
       <Collapsible>
@@ -64,7 +102,19 @@ const page = () => {
           <Deleteproduct />
         </Box>
       </Collapsible>
-      <DataTable rows={products ?? []} columns={columns} loading={isFetching} />
+      <Typography className="text-2xl font-bold text-center">
+        حسابداری - کالاها
+      </Typography>
+      <SortFilterPaginationComponent
+        fieldMap={productFieldMap}
+        setQuery={setQuery}
+        count={products?.totalCount ?? 0}
+      />
+      <SimpleDataGrid
+        rows={products?.rows ?? []}
+        columns={columns}
+        isLoading={isFetching}
+      />
     </div>
   );
 };

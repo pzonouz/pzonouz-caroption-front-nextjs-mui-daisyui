@@ -57,6 +57,7 @@ export const Filter = <T extends { name: string }>({
           }}
         >
           <option value="contains">شامل</option>
+          <option value="notcontains">به غیر از</option>
           <option value="=">مساوی</option>
           <option value="<">کوچکتراز </option>
           <option value="<=">کوچکترمساوی</option>

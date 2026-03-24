@@ -1,14 +1,18 @@
-import { createApi, fetchBaseQuery, retry } from "@reduxjs/toolkit/query/react";
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import {
   brandsType,
   brandType,
   categoriesType,
   categoryType,
   imageType,
+  invoicesType,
+  invoiceType,
   parameterGroupsType,
   parameterGroupType,
   parametersType,
   parameterType,
+  personsType,
+  personType,
   productsType,
   productType,
   signinType,
@@ -29,6 +33,8 @@ export const api = createApi({
     "images",
     "parameterGroups",
     "parameters",
+    "invoices",
+    "persons",
   ],
   endpoints: (builder) => ({
     getCategories: builder.query<categoriesType, string | null>({
@@ -79,8 +85,11 @@ export const api = createApi({
       },
       providesTags: ["products"],
     }),
-    getProductsForAccounts: builder.query<productType[], void>({
-      query: () => `products_for_accounts`,
+    getProductsForAccounts: builder.query<productsType, string>({
+      query: (query) => {
+        if (query) return `products_for_accounts${query}`;
+        return `products_for_accounts`;
+      },
       providesTags: ["products"],
     }),
     getProduct: builder.query<productType, string>({
@@ -265,6 +274,80 @@ export const api = createApi({
       }),
       invalidatesTags: ["parameters"],
     }),
+    getInvoices: builder.query<invoicesType, string | null>({
+      query: (query) => {
+        if (query) return `invoices${query}`;
+        return `invoices`;
+      },
+      providesTags: ["invoices"],
+    }),
+    getInvoice: builder.query<invoiceType, string>({
+      query: (id: string) => `invoices/${id}`,
+      providesTags: ["invoices"],
+    }),
+    createInvoice: builder.mutation<void, Partial<invoiceType>>({
+      query: ({ ...post }) => ({
+        url: `invoices`,
+        method: "POST",
+        body: post,
+      }),
+      invalidatesTags: ["invoices"],
+    }),
+    editInvoice: builder.mutation<
+      void,
+      Partial<invoiceType> & Pick<invoiceType, "id">
+    >({
+      query: ({ id, ...patch }) => ({
+        url: `invoices/${id}`,
+        method: "PATCH",
+        body: patch,
+      }),
+      invalidatesTags: ["invoices"],
+    }),
+    deleteInvoice: builder.mutation<void, Pick<invoiceType, "id">>({
+      query: ({ id }) => ({
+        url: `invoices/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["invoices"],
+    }),
+    getPersons: builder.query<personsType, string | null>({
+      query: (query) => {
+        if (query) return `persons${query}`;
+        return `persons`;
+      },
+      providesTags: ["persons"],
+    }),
+    getPerson: builder.query<personType, string>({
+      query: (id: string) => `persons/${id}`,
+      providesTags: ["persons"],
+    }),
+    createPerson: builder.mutation<void, Partial<personType>>({
+      query: ({ ...post }) => ({
+        url: `persons`,
+        method: "POST",
+        body: post,
+      }),
+      invalidatesTags: ["persons"],
+    }),
+    editPerson: builder.mutation<
+      void,
+      Partial<personType> & Pick<personType, "id">
+    >({
+      query: ({ id, ...patch }) => ({
+        url: `persons/${id}`,
+        method: "PATCH",
+        body: patch,
+      }),
+      invalidatesTags: ["persons"],
+    }),
+    deletePerson: builder.mutation<void, Pick<personType, "id">>({
+      query: ({ id }) => ({
+        url: `persons/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["persons"],
+    }),
     signup: builder.mutation<void, Partial<signupType>>({
       query: ({ ...patch }) => ({
         url: `auth/signup`,
@@ -305,12 +388,22 @@ export const {
   useCreateParameterGroupMutation,
   useEditParameterGroupMutation,
   useDeleteParameterGroupMutation,
+  useGetInvoicesQuery,
+  useGetInvoiceQuery,
+  useCreateInvoiceMutation,
+  useEditInvoiceMutation,
+  useDeleteInvoiceMutation,
   useGetParametersQuery,
   useGetParametersByCategoryQuery,
   useGetParameterQuery,
   useCreateParameterMutation,
   useEditParameterMutation,
   useDeleteParameterMutation,
+  useGetPersonsQuery,
+  useGetPersonQuery,
+  useCreatePersonMutation,
+  useEditPersonMutation,
+  useDeletePersonMutation,
   useGetimagesQuery,
   useGetImageQuery,
   useCreateImageMutation,

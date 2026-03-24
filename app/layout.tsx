@@ -7,6 +7,7 @@ import StoreProvider from "./components/Providers/StoreProvider";
 import { CacheProvider } from "./components/Providers/CacheProvider";
 import { AuthProvider } from "./components/Providers/AuthProvider";
 import { SnackbarProvider } from "./components/Providers/SnackbarProvider";
+import { LocalizationProviderComponent } from "./components/Providers/LocalizationProvider";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -26,7 +27,11 @@ export default function RootLayout({
               <CacheProvider>
                 <ThemeProvider theme={theme}>
                   <AuthProvider>
-                    <SnackbarProvider>{children}</SnackbarProvider>
+                    <SnackbarProvider>
+                      <LocalizationProviderComponent>
+                        {children}
+                      </LocalizationProviderComponent>
+                    </SnackbarProvider>
                   </AuthProvider>
                 </ThemeProvider>
               </CacheProvider>
